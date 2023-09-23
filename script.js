@@ -26,24 +26,8 @@ document.addEventListener('keydown', function (e) {
 });
 btnScroolTo === null || btnScroolTo === void 0 ? void 0 : btnScroolTo.addEventListener('click', function (e) {
     var s1coords = section1 === null || section1 === void 0 ? void 0 : section1.getBoundingClientRect();
-    // window.scrollTo({
-    //   left: s1coords.left +window.scrollX,
-    //   top : s1coords.top+ window.scrollY,
-    //   behavior: 'smooth',
-    // });
     section1 === null || section1 === void 0 ? void 0 : section1.scrollIntoView({ behavior: 'smooth' });
 });
-////////////////////////////////////////////////// Page navigation
-// document.querySelectorAll('.nav__link').forEach(function(e1){
-//   e1.addEventListener('click',function(e){
-//     e.preventDefault();
-//     const id=this.getAttribute('href');
-//     document.querySelector(id).scrollIntoView({behavior : 'smooth'});
-//   });
-// });
-////EVENT DELEGATION
-//1. Add event listener to common parent element
-//2. Determine what element originated the event.
 (_a = document.querySelector('.nav__links')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function (e) {
     var _a;
     e.preventDefault();
@@ -68,24 +52,8 @@ tabsContainer === null || tabsContainer === void 0 ? void 0 : tabsContainer.addE
     (_b = document
         .querySelector(".operations__content--".concat(clicked.dataset.tab))) === null || _b === void 0 ? void 0 : _b.classList.add('operations__content--active');
 });
-// sticky navigation
-// const initialCoords=section1?.getBoundingClientRect();
-// window.addEventListener('scroll',function(e){
-//   if(this.window.scrollY>initialCoords.top)nav.classList.add('sticky');
-// });
 // Intersction Observer API
 var nav = document.querySelector('.nav');
-// const obsCallback = function (entries, observer) {
-//   entries.forEach(ele => {
-//     nav?.classList.add('.sticky');
-//   });
-// };
-// const obsOptions = {
-//   root: null,
-//   threshold: [0,0.1],
-// };
-// const observer = new IntersectionObserver(obsCallback, obsOptions);
-// observer.observe(section1);
 var header = document.querySelector('.header');
 var navHeight = nav === null || nav === void 0 ? void 0 : nav.getBoundingClientRect().height;
 var stickyNav = function (entries) {
@@ -135,29 +103,41 @@ var imgObserver = new IntersectionObserver(loading, {
     threshold: 0,
 });
 imgTargets.forEach(function (ele) { return imgObserver.observe(ele); });
-// const header=document.querySelector('.header');
-// const allSections=document.querySelectorAll('.section'); //return nodeList of all sections
-// const message=document.createElement('div');
-// message.classList.add('cookie-message');
-// message.innerHTML='We use cookie for improved functionality and analytics. <button class="btn btn--close-cookie btn-sm">Got it!</button>';
-// header.prepend(message);
-// header.append(message);
-// document
-//   .querySelector('.btn--close-cookie')
-//   .addEventListener('click',function(){
-//     message.remove();
-//   });
-// //styles
-// message.style.backgroundColor='#37383d';
-// message.style.width='120%';
-// message.style.height= Number.parseFloat(getComputedStyle(message).height,10) + 30 + 'px';
-// // document.documentElement.style.setProperty('--color-primary','orangered')
-// //Attributes
-// const logo=document.querySelector('.nav__logo');
-// //Data Attributes
-// const h1= document.querySelector('h1');
-// h1?.addEventListener('mouseenter',function(e){
-//   alert('addEvent')
-// });
-// h1?.onmouseenter = function(e){
-// };
+//--------------- slider --------------------
+var slides = document.querySelectorAll('.slide');
+var btnLeft = document.querySelector('.slider__btn--left');
+var btnRight = document.querySelector('.slider__btn--right');
+var dotsContainer = document.querySelector('.dots');
+var curSlide = 0;
+// const slider=document.querySelector('.slider');
+// slider.style.transform= 'scale(0.4) translateX(-800px)';
+// slider.style.overflow='visible';
+slides.forEach(function (s, i) { return s.style.transform = "translateX(".concat(100 * i, "%)"); });
+btnLeft === null || btnLeft === void 0 ? void 0 : btnLeft.addEventListener('click', function () {
+    if (curSlide === 0)
+        curSlide = slides.length - 1;
+    else
+        curSlide--;
+    slides.forEach(function (s, i) { return s.style.transform = "translateX(".concat((100 * (i - curSlide)), "%)"); });
+});
+btnRight === null || btnRight === void 0 ? void 0 : btnRight.addEventListener('click', function () {
+    if (curSlide === slides.length - 1)
+        curSlide = 0;
+    else
+        curSlide++;
+    slides.forEach(function (s, i) { return s.style.transform = "translateX(".concat((100 * (i - curSlide)), "%)"); });
+});
+////  create Dots
+var createDots = function () {
+    slides.forEach(function (_, i) {
+        dotsContainer.insertAdjacentHTML('beforeend', "<button class=\"dots__dot\" data-slide=\"".concat(i, "\"></button>"));
+    });
+};
+createDots();
+dotsContainer === null || dotsContainer === void 0 ? void 0 : dotsContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+        var slide_1 = e.target.dataset.slide;
+        currSlide = slide_1 - 1;
+        slides.forEach(function (s, i) { return s.style.transform = "translateX(".concat((100 * (i - slide_1)), "%)"); });
+    }
+});

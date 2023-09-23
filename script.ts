@@ -35,29 +35,9 @@ document.addEventListener('keydown', function (e) {
 btnScroolTo?.addEventListener('click', function (e) {
   const s1coords = section1?.getBoundingClientRect();
 
-  // window.scrollTo({
-  //   left: s1coords.left +window.scrollX,
-  //   top : s1coords.top+ window.scrollY,
-  //   behavior: 'smooth',
-  // });
-
   section1?.scrollIntoView({ behavior: 'smooth' });
 });
 
-////////////////////////////////////////////////// Page navigation
-
-// document.querySelectorAll('.nav__link').forEach(function(e1){
-//   e1.addEventListener('click',function(e){
-//     e.preventDefault();
-//     const id=this.getAttribute('href');
-
-//     document.querySelector(id).scrollIntoView({behavior : 'smooth'});
-//   });
-// });
-
-////EVENT DELEGATION
-//1. Add event listener to common parent element
-//2. Determine what element originated the event.
 
 document.querySelector('.nav__links')?.addEventListener('click', function (e) {
   e.preventDefault();
@@ -91,31 +71,9 @@ tabsContainer?.addEventListener('click', function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     ?.classList.add('operations__content--active');
 });
-
-// sticky navigation
-// const initialCoords=section1?.getBoundingClientRect();
-
-// window.addEventListener('scroll',function(e){
-
-//   if(this.window.scrollY>initialCoords.top)nav.classList.add('sticky');
-// });
-
 // Intersction Observer API
 
 const nav = document.querySelector('.nav');
-// const obsCallback = function (entries, observer) {
-//   entries.forEach(ele => {
-//     nav?.classList.add('.sticky');
-//   });
-// };
-
-// const obsOptions = {
-//   root: null,
-//   threshold: [0,0.1],
-// };
-
-// const observer = new IntersectionObserver(obsCallback, obsOptions);
-// observer.observe(section1);
 
 const header = document.querySelector('.header');
 const navHeight=nav?.getBoundingClientRect().height;
@@ -178,42 +136,56 @@ const imgObserver = new IntersectionObserver(loading,{
 
 imgTargets.forEach(ele=> imgObserver.observe(ele));
 
-// const header=document.querySelector('.header');
-// const allSections=document.querySelectorAll('.section'); //return nodeList of all sections
 
-// const message=document.createElement('div');
-// message.classList.add('cookie-message');
+//--------------- slider --------------------
 
-// message.innerHTML='We use cookie for improved functionality and analytics. <button class="btn btn--close-cookie btn-sm">Got it!</button>';
+const slides=document.querySelectorAll('.slide');
+const btnLeft=document.querySelector('.slider__btn--left');
+const btnRight=document.querySelector('.slider__btn--right');
+const dotsContainer=document.querySelector('.dots');
 
-// header.prepend(message);
-// header.append(message);
+let curSlide=0;
 
-// document
-//   .querySelector('.btn--close-cookie')
-//   .addEventListener('click',function(){
-//     message.remove();
-//   });
+// const slider=document.querySelector('.slider');
+// slider.style.transform= 'scale(0.4) translateX(-800px)';
+// slider.style.overflow='visible';
 
-// //styles
-// message.style.backgroundColor='#37383d';
-// message.style.width='120%';
+slides.forEach((s,i)=> s.style.transform =`translateX(${100*i}%)`);
 
-// message.style.height= Number.parseFloat(getComputedStyle(message).height,10) + 30 + 'px';
+btnLeft?.addEventListener('click',function(){
+  if(curSlide===0)curSlide=slides.length-1;
+  else curSlide--;
 
-// // document.documentElement.style.setProperty('--color-primary','orangered')
+  slides.forEach((s,i)=> s.style.transform =`translateX(${(100*(i-curSlide))}%)`);
+});
 
-// //Attributes
+btnRight?.addEventListener('click',function(){
+  if(curSlide===slides.length-1)curSlide=0
+  ;
+  else curSlide++;
 
-// const logo=document.querySelector('.nav__logo');
+  slides.forEach((s,i)=> s.style.transform =`translateX(${(100*(i-curSlide))}%)`);
+});
 
-// //Data Attributes
+////  create Dots
 
-// const h1= document.querySelector('h1');
+const createDots=function(){
+  slides.forEach(function(_,i){
+    dotsContainer.insertAdjacentHTML(
+      'beforeend',
+      `<button class="dots__dot" data-slide="${i}"></button>`);
+  })
+}
+createDots();
 
-// h1?.addEventListener('mouseenter',function(e){
-//   alert('addEvent')
-// });
+dotsContainer?.addEventListener('click',function(e){
+  if(e.target.classList.contains('dots__dot')){
+    const {slide} = e.target.dataset;
+    
+    currSlide=slide-1;
+    
+    slides.forEach((s,i)=> s.style.transform =`translateX(${(100*(i-slide))}%)`);
+    
+  }
+})
 
-// h1?.onmouseenter = function(e){
-// };
