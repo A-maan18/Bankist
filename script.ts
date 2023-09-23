@@ -1,7 +1,7 @@
 ///////////////////////////////////////
 const btnScroolTo = document.querySelector('.btn--scroll-to');
 
-const section1=document.querySelector('#section--1');
+const section1 = document.querySelector('#section--1');
 
 // Modal window
 
@@ -15,16 +15,16 @@ const openModal = function () {
   overlay1?.classList.remove('hidden');
 };
 
-const closeModal=function(){
+const closeModal = function () {
   modal1?.classList.add('hidden');
   overlay1?.classList.add('hidden');
 };
- 
+
 for (let i: number = 0; i < btnsOpenModal.length; i++)
   btnsOpenModal[i].addEventListener('click', openModal);
 
-btnCloseModal?.addEventListener('click',closeModal);
-overlay1?.addEventListener('click',closeModal);
+btnCloseModal?.addEventListener('click', closeModal);
+overlay1?.addEventListener('click', closeModal);
 
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && !modal1?.classList.contains('hidden')) {
@@ -32,8 +32,8 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-btnScroolTo?.addEventListener('click',function(e){
-  const s1coords=section1?.getBoundingClientRect();
+btnScroolTo?.addEventListener('click', function (e) {
+  const s1coords = section1?.getBoundingClientRect();
 
   // window.scrollTo({
   //   left: s1coords.left +window.scrollX,
@@ -41,7 +41,7 @@ btnScroolTo?.addEventListener('click',function(e){
   //   behavior: 'smooth',
   // });
 
-  section1?.scrollIntoView({behavior: 'smooth'});
+  section1?.scrollIntoView({ behavior: 'smooth' });
 });
 
 ////////////////////////////////////////////////// Page navigation
@@ -59,40 +59,124 @@ btnScroolTo?.addEventListener('click',function(e){
 //1. Add event listener to common parent element
 //2. Determine what element originated the event.
 
-document.querySelector('.nav__links').addEventListener('click',function(e){
-
+document.querySelector('.nav__links')?.addEventListener('click', function (e) {
   e.preventDefault();
 
   // Matching Strategy
-  if(e.target.classList.contains('nav__link')){
-    const id=e.target.getAttribute('href');
+  if (e.target?.classList.contains('nav__link')) {
+    const id = e.target.getAttribute('href');
 
-    document.querySelector(id).scrollIntoView({behavior : 'smooth'});
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
   }
-})
+});
 
 /////operationsss
 
-const tabs= document.querySelectorAll('.operations__tab');
+const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
-const tabsContent=document.querySelectorAll('.operations__content');
+const tabsContent = document.querySelectorAll('.operations__content');
 
-tabsContainer?.addEventListener('click',function(e){
-  const clicked=e.target.closest('.operations__tab');
+tabsContainer?.addEventListener('click', function (e) {
+  const clicked = e.target?.closest('.operations__tab');
 
-  if(!clicked)return;
+  if (!clicked) return;
 
-  tabs.forEach(t=> t.classList.remove('operations__tab--active'));
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
 
-  tabsContent.forEach(c=>c.classList.remove('operations__content--active'));
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
 
   clicked.classList.add('operations__tab--active');
 
-  document.querySelector(`.operations__content--${clicked.dataset.tab}`)?.classList.add('operations__content--active');
-})
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    ?.classList.add('operations__content--active');
+});
+
+// sticky navigation
+// const initialCoords=section1?.getBoundingClientRect();
+
+// window.addEventListener('scroll',function(e){
+
+//   if(this.window.scrollY>initialCoords.top)nav.classList.add('sticky');
+// });
+
+// Intersction Observer API
+
+const nav = document.querySelector('.nav');
+// const obsCallback = function (entries, observer) {
+//   entries.forEach(ele => {
+//     nav?.classList.add('.sticky');
+//   });
+// };
+
+// const obsOptions = {
+//   root: null,
+//   threshold: [0,0.1],
+// };
+
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+
+const header = document.querySelector('.header');
+const navHeight=nav?.getBoundingClientRect().height;
 
 
+const stickyNav = function (entries) {
+  const [entry] = entries;
 
+  if (!entry.isIntersecting) nav?.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin:`-${navHeight}px`,
+});
+headerObserver.observe(header);
+
+//   Reveal Section //////
+const allSections=document.querySelectorAll('.section');
+
+const revealSection=function(entries,observer){
+  const [entry] = entries;
+ 
+  if(entry.isIntersecting){entry.target?.classList.remove('section--hidden');
+
+  observer.unobserve(entry.target);}
+}
+
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.20,
+});
+
+allSections.forEach(function(section){
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
+
+// Lazy Loading Images..............
+
+const imgTargets=document.querySelectorAll('img[data-src]');
+
+const loading=function(entries,observer){
+  const [entry]=entries;
+
+  if(!entry.isIntersecting)return;
+  
+  entry.target.src=entry.target.dataset.src;
+  entry.target.addEventListener('load',function(){
+      entry.target.classList.remove('lazy-img');
+  });
+}
+
+const imgObserver = new IntersectionObserver(loading,{
+  root:null,
+  threshold:0,
+});
+
+imgTargets.forEach(ele=> imgObserver.observe(ele));
 
 // const header=document.querySelector('.header');
 // const allSections=document.querySelectorAll('.section'); //return nodeList of all sections
@@ -110,7 +194,6 @@ tabsContainer?.addEventListener('click',function(e){
 //   .addEventListener('click',function(){
 //     message.remove();
 //   });
-
 
 // //styles
 // message.style.backgroundColor='#37383d';
@@ -134,4 +217,3 @@ tabsContainer?.addEventListener('click',function(e){
 
 // h1?.onmouseenter = function(e){
 // };
-

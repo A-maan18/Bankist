@@ -1,3 +1,4 @@
+var _a;
 ///////////////////////////////////////
 var btnScroolTo = document.querySelector('.btn--scroll-to');
 var section1 = document.querySelector('#section--1');
@@ -43,10 +44,11 @@ btnScroolTo === null || btnScroolTo === void 0 ? void 0 : btnScroolTo.addEventLi
 ////EVENT DELEGATION
 //1. Add event listener to common parent element
 //2. Determine what element originated the event.
-document.querySelector('.nav__links').addEventListener('click', function (e) {
+(_a = document.querySelector('.nav__links')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function (e) {
+    var _a;
     e.preventDefault();
     // Matching Strategy
-    if (e.target.classList.contains('nav__link')) {
+    if ((_a = e.target) === null || _a === void 0 ? void 0 : _a.classList.contains('nav__link')) {
         var id = e.target.getAttribute('href');
         document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
     }
@@ -56,15 +58,83 @@ var tabs = document.querySelectorAll('.operations__tab');
 var tabsContainer = document.querySelector('.operations__tab-container');
 var tabsContent = document.querySelectorAll('.operations__content');
 tabsContainer === null || tabsContainer === void 0 ? void 0 : tabsContainer.addEventListener('click', function (e) {
-    var _a;
-    var clicked = e.target.closest('.operations__tab');
+    var _a, _b;
+    var clicked = (_a = e.target) === null || _a === void 0 ? void 0 : _a.closest('.operations__tab');
     if (!clicked)
         return;
     tabs.forEach(function (t) { return t.classList.remove('operations__tab--active'); });
     tabsContent.forEach(function (c) { return c.classList.remove('operations__content--active'); });
     clicked.classList.add('operations__tab--active');
-    (_a = document.querySelector(".operations__content--".concat(clicked.dataset.tab))) === null || _a === void 0 ? void 0 : _a.classList.add('operations__content--active');
+    (_b = document
+        .querySelector(".operations__content--".concat(clicked.dataset.tab))) === null || _b === void 0 ? void 0 : _b.classList.add('operations__content--active');
 });
+// sticky navigation
+// const initialCoords=section1?.getBoundingClientRect();
+// window.addEventListener('scroll',function(e){
+//   if(this.window.scrollY>initialCoords.top)nav.classList.add('sticky');
+// });
+// Intersction Observer API
+var nav = document.querySelector('.nav');
+// const obsCallback = function (entries, observer) {
+//   entries.forEach(ele => {
+//     nav?.classList.add('.sticky');
+//   });
+// };
+// const obsOptions = {
+//   root: null,
+//   threshold: [0,0.1],
+// };
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+var header = document.querySelector('.header');
+var navHeight = nav === null || nav === void 0 ? void 0 : nav.getBoundingClientRect().height;
+var stickyNav = function (entries) {
+    var entry = entries[0];
+    if (!entry.isIntersecting)
+        nav === null || nav === void 0 ? void 0 : nav.classList.add('sticky');
+    else
+        nav.classList.remove('sticky');
+};
+var headerObserver = new IntersectionObserver(stickyNav, {
+    root: null,
+    threshold: 0,
+    rootMargin: "-".concat(navHeight, "px"),
+});
+headerObserver.observe(header);
+//   Reveal Section //////
+var allSections = document.querySelectorAll('.section');
+var revealSection = function (entries, observer) {
+    var _a;
+    var entry = entries[0];
+    if (entry.isIntersecting) {
+        (_a = entry.target) === null || _a === void 0 ? void 0 : _a.classList.remove('section--hidden');
+        observer.unobserve(entry.target);
+    }
+};
+var sectionObserver = new IntersectionObserver(revealSection, {
+    root: null,
+    threshold: 0.20,
+});
+allSections.forEach(function (section) {
+    sectionObserver.observe(section);
+    section.classList.add('section--hidden');
+});
+// Lazy Loading Images..............
+var imgTargets = document.querySelectorAll('img[data-src]');
+var loading = function (entries, observer) {
+    var entry = entries[0];
+    if (!entry.isIntersecting)
+        return;
+    entry.target.src = entry.target.dataset.src;
+    entry.target.addEventListener('load', function () {
+        entry.target.classList.remove('lazy-img');
+    });
+};
+var imgObserver = new IntersectionObserver(loading, {
+    root: null,
+    threshold: 0,
+});
+imgTargets.forEach(function (ele) { return imgObserver.observe(ele); });
 // const header=document.querySelector('.header');
 // const allSections=document.querySelectorAll('.section'); //return nodeList of all sections
 // const message=document.createElement('div');
